@@ -8,9 +8,9 @@ import {
 } from "recharts";
 
 const C = {
-  bg: "#03050e", panel: "#070b17", panel2: "#0b1020", border: "#0f1829",
-  green: "#10d9a0", gold: "#f0b429", blue: "#4f9ef8", purple: "#b794f6",
-  orange: "#fb923c", red: "#f87171", text: "#e2e8f0", muted: "#334155", sub: "#64748b",
+  bg: "#f8fafc", panel: "#ffffff", panel2: "#f1f5f9", border: "#e2e8f0",
+  green: "#059669", gold: "#d97706", blue: "#2563eb", purple: "#7c3aed",
+  orange: "#ea580c", red: "#dc2626", text: "#0f172a", muted: "#94a3b8", sub: "#64748b",
 };
 
 const eur = (n: number) =>
