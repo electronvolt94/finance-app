@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const C = {
   bg: "#03050e", panel: "#070b17", panel2: "#0b1020", border: "#0f1829",
-  green: "#10d9a0", gold: "#f0b429", blue: "#4f9ef8", purple: "#b794f6",
+  green: "#10d9a0", gold: "#f0b429", blue: "#4f9ef8", purple: "#b794f6", pink: "#f9a8d4",
   orange: "#fb923c", red: "#f87171", text: "#e2e8f0", muted: "#334155", sub: "#64748b",
 };
 
@@ -21,7 +21,7 @@ const CATEGORIES = [
   { id: "clothing",     label: "👕 Clothing",           col: C.blue,   budget: 50  },
   { id: "home",         label: "🏠 Home / Utilities",  col: C.green,  budget: 100 },
   { id: "entertainment",label: "🎬 Entertainment",     col: C.purple, budget: 50  },
-  { id: "baby",         label: "👶 Baby",               col: C.pink || "#f9a8d4", budget: 200 },
+  { id: "baby",         label: "👶 Baby",               col: C.pink, budget: 200 },
   { id: "holiday",      label: "✈️ Holiday / Travel",  col: C.gold,   budget: 167 },
   { id: "personal",     label: "👤 Personal",           col: C.sub,    budget: 200 },
   { id: "one_off",      label: "⚡ One-Off",            col: C.red,    budget: 0   },
