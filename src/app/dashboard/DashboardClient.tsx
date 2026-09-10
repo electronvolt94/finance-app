@@ -186,6 +186,43 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
     setLoanData(prev => prev.map(l => l.id === id ? { ...l, current_capital, is_active: is_active ? 1 : 0 } : l));
   }
 
+  async function addLoan() {
+    const res = await fetch("/api/loans", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newLoan),
+    });
+    const created = await res.json();
+    setLoanData(prev => [...prev, created]);
+    setNewLoan({});
+    setShowAddLoan(false);
+  }
+
+  function startEditLoan(loan: any) {
+    setEditingLoanId(loan.id);
+    setEditLoanForm({
+      original_capital: String(loan.original_capital),
+      monthly_payment: String(loan.monthly_payment),
+      interest_rate: String(loan.interest_rate),
+    });
+  }
+
+  async function saveEditLoan(id: number) {
+    const payload = {
+      id,
+      original_capital: Number(editLoanForm.original_capital),
+      monthly_payment: Number(editLoanForm.monthly_payment),
+      interest_rate: Number(editLoanForm.interest_rate),
+    };
+    await fetch("/api/loans", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    setLoanData(prev => prev.map(l => l.id === id ? { ...l, ...payload } : l));
+    setEditingLoanId(null);
+  }
+
   async function logout() {
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
