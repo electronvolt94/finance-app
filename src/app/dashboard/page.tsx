@@ -28,9 +28,11 @@ export default async function DashboardPage() {
       loans={loans}
       goals={goals}
       recentExpenses={recentExpenses}
+      const intercalaryTotal = await queryOne( "SELECT COALESCE(SUM(mortgage_interest),0) as total FROM monthly_entries WHERE user_id=$1", [session.userId] )
       latestInvestments={recentInvestments}
       currentYear={year}
       currentMonth={month}
+      totalIntercalaryInterest={Number(intercalaryTotal?.total || 0)}
     />
   );
 }
