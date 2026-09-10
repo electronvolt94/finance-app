@@ -86,7 +86,7 @@ let balance = principal;
                                          if (principalPortion > balance) principalPortion = balance; balance -= principalPortion; months++; } 
                                                                                          return { months, interestPaid }; }
                                          
-export default function DashboardClient({ user, loans, goals, recentExpenses, latestInvestments, currentYear, currentMonth }: any) {
+export default function DashboardClient({ user, loans, goals, recentExpenses, latestInvestments, currentYear, currentMonth, totalIntercalaryInterest }: any) {
   const router = useRouter();
   const [tab, setTab] = useState("kpi");
 
@@ -351,6 +351,7 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
               <KpiCard label="Monthly Surplus" value={surplus} target={988} col={surplus >= 988 ? C.green : C.orange} sub="Target: €988/mo (kamikaze)" />
               <KpiCard label="Total Loan Capital" value={totalLoanCapital} col={C.red} sub="Target: €0 by Mar 2027" />
               <KpiCard label="Investments Total" value={totalInvested || (1522+3300+4000)} col={C.blue} sub="PEA + AV + PER + PEE + Livret" />
+              <KpiCard label="Intercalary Interest Paid" value={totalIntercalaryInterest} col={C.orange} sub="Mortgage interest-only phase" />
             </div>
 
             {/* DELIVERY COUNTDOWN */}
