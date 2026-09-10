@@ -21,14 +21,13 @@ export default async function DashboardPage() {
     "SELECT * FROM investments WHERE user_id=$1 ORDER BY year DESC, month DESC LIMIT 1",
     [session.userId]
   );
-
+  const intercalaryTotal = await queryOne( "SELECT COALESCE(SUM(mortgage_interest),0) as total FROM monthly_entries WHERE user_id=$1", [session.userId] );
   return (
     <DashboardClient
       user={{ userId: session.userId, name: session.name }}
       loans={loans}
       goals={goals}
       recentExpenses={recentExpenses}
-      const intercalaryTotal = await queryOne( "SELECT COALESCE(SUM(mortgage_interest),0) as total FROM monthly_entries WHERE user_id=$1", [session.userId] )
       latestInvestments={recentInvestments}
       currentYear={year}
       currentMonth={month}
