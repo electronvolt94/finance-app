@@ -188,15 +188,14 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
   }
 
   // Computed KPIs
-  const totalLoanCapital = loanData.filter(l => l.is_active).reduce((s: number, l: any) => s + l.current_capital, 0);
+  const totalLoanCapital = loanData.filter(l => l.is_active && !l.name.toLowerCase().includes("mortgage")).reduce((s: number, l: any) => s + l.current_capital, 0);
   const latest = recentExpenses[0];
   const totalExpenses = latest ? Object.entries(latest).filter(([k]) => !["id","user_id","year","month","income","notes","created_at"].includes(k)).reduce((s, [,v]) => s + (Number(v) || 0), 0) : 0;
   const surplus = latest ? (latest.income || 0) - totalExpenses : 0;
   const totalInvested = latestInvestments
     ? (latestInvestments.pea_balance || 0) + (latestInvestments.av_balance || 0) + (latestInvestments.per_balance || 0) + (latestInvestments.pee_balance || 0) + (latestInvestments.livret_a_balance || 0)
     : 0;
-  const apportTotal = 1500 + 4000 + 1900 + 2806 + 3300; // confirmed
-
+  
   // chart data from history
   const chartData = recentExpenses.slice().reverse().map((e: any) => ({
     name: `${MONTHS[e.month - 1]} ${e.year}`,
@@ -256,8 +255,7 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
           {[
             { label: "Total Loans Left", val: eur(totalLoanCapital), col: totalLoanCapital > 0 ? C.red : C.green },
             { label: "This Month Surplus", val: surplus >= 0 ? eur(surplus) : `-${eur(Math.abs(surplus))}`, col: surplus >= 0 ? C.green : C.red },
-            { label: "Total Invested", val: eur(totalInvested), col: C.blue },
-            { label: "Apport Ready", val: eur(apportTotal), col: C.gold },
+            { label: "Total Invested", val: eur(totalInvested), col: C.blue }, 
           ].map(({ label, val, col }) => (
             <div key={label} style={{ background: C.panel, border: `1px solid ${col}22`, borderRadius: 8, padding: "10px 12px" }}>
               <p style={{ color: C.muted, fontSize: 9, textTransform: "uppercase" as const, margin: "0 0 3px" }}>{label}</p>
@@ -289,7 +287,6 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
             <div style={{ background: C.panel, border: `1px solid ${C.border}`, borderRadius: 12, padding: 18, marginBottom: 14 }}>
               <h3 style={{ color: C.text, fontWeight: 800, fontSize: 13, marginBottom: 16 }}>🎯 Goal Progress</h3>
               <ProgressBar label="Loans Cleared" current={16930 - totalLoanCapital} target={16930} col={C.red} />
-              <ProgressBar label="Apport (target €13,506)" current={apportTotal} target={13506} col={C.gold} />
               <ProgressBar label="Emergency Fund (target €21k)" current={latestInvestments?.livret_a_balance || 4000} target={21000} col={C.blue} />
               <ProgressBar label="PEA Combined (target €150k each)" current={latestInvestments?.pea_balance || 1522} target={150000} col={C.green} />
               <ProgressBar label="Total Invested" current={totalInvested || (1522 + 3300 + 4000)} target={50000} col={C.purple} />
@@ -353,7 +350,6 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 14 }}>
               <KpiCard label="Monthly Surplus" value={surplus} target={988} col={surplus >= 988 ? C.green : C.orange} sub="Target: €988/mo (kamikaze)" />
               <KpiCard label="Total Loan Capital" value={totalLoanCapital} col={C.red} sub="Target: €0 by Mar 2027" />
-              <KpiCard label="Apport Total" value={apportTotal} target={13506} col={C.gold} sub="Bank min: €6,000" />
               <KpiCard label="Investments Total" value={totalInvested || (1522+3300+4000)} col={C.blue} sub="PEA + AV + PER + PEE + Livret" />
             </div>
 
