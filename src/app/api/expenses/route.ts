@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "@/lib/db";
 import { getSession } from "@/lib/auth";
+const HOUSEHOLD_USER_ID = 1;
 
 export async function GET(req: NextRequest) {
   const session = await getSession();
@@ -10,9 +11,9 @@ export async function GET(req: NextRequest) {
   const month = searchParams.get("month");
   let rows;
   if (year && month) {
-    rows = await query("SELECT * FROM monthly_entries WHERE user_id=$1 AND year=$2 AND month=$3", [session.userId, year, month]);
+    rows = await query("SELECT * FROM monthly_entries WHERE user_id=$1 AND year=$2 AND month=$3", [HOUSEHOLD_USER_ID, year, month]);
   } else {
-    rows = await query("SELECT * FROM monthly_entries WHERE user_id=$1 ORDER BY year DESC, month DESC LIMIT 24", [session.userId]);
+    rows = await query("SELECT * FROM monthly_entries WHERE user_id=$1 ORDER BY year DESC, month DESC LIMIT 24", [HOUSEHOLD_USER_ID]);
   }
   return NextResponse.json(rows);
 }
@@ -26,6 +27,6 @@ export async function POST(req: NextRequest) {
     INSERT INTO monthly_entries (user_id, year, month, ${fields.join(",")})
     VALUES ($1, $2, $3, ${fields.map((_,i) => `$${i+4}`).join(",")})
     ON CONFLICT (user_id, year, month) DO UPDATE SET ${fields.map((f,i) => `${f}=$${i+4}`).join(",")}
-  `, [session.userId, body.year, body.month, ...fields.map(f => body[f] ?? 0)]);
+  `, [HOUSEHOLD_USER_ID, body.year, body.month, ...fields.map(f => body[f] ?? 0)]);
   return NextResponse.json({ ok: true });
 }
