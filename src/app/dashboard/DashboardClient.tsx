@@ -75,7 +75,17 @@ const TABS = [
   { id: "goals",      label: "🎯 Goals" },
   { id: "history",    label: "📅 History" },
 ];
-
+function simulateLoan(principal: number, annualRatePct: number, monthlyPayment: number) { const r = annualRatePct / 100 / 12;
+let balance = principal; 
+                                                                                         let months = 0; 
+                                                                                         let interestPaid = 0;
+                                                                                         while (balance > 0.01 && months < 1000)
+                                                                                         { const interest = balance * r;interestPaid += interest;
+                                         let principalPortion = monthlyPayment - interest; 
+                                         if (principalPortion <= 0) { months = Infinity; break; } 
+                                         if (principalPortion > balance) principalPortion = balance; balance -= principalPortion; months++; } 
+                                                                                         return { months, interestPaid }; }
+                                         
 export default function DashboardClient({ user, loans, goals, recentExpenses, latestInvestments, currentYear, currentMonth }: any) {
   const router = useRouter();
   const [tab, setTab] = useState("kpi");
@@ -96,6 +106,8 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
 
   // loans local state
   const [loanData, setLoanData] = useState<any[]>(loans);
+  const [calcLoanId, setCalcLoanId] = useState<number | null>(null);
+  const [extraPayment, setExtraPayment] = useState("");
 
   // Load existing expense entry
   useEffect(() => {
@@ -594,6 +606,52 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
                 )}
               </div>
             ))}
+            {loanData.filter((l: any) => l.is_active).length > 0 && (
+              <div style={{ background: C.panel, border: `1px solid ${C.green}33`, borderRadius: 12, padding: 18, marginTop: 4 }}>
+                <h3 style={{ color: C.green, fontWeight: 800, fontSize: 13, marginBottom: 14 }}>💡 Payoff Calculator</h3>
+                <div style={{ marginBottom: 12 }}>
+                  <label style={{ color: C.sub, fontSize: 10, textTransform: "uppercase" as const, letterSpacing: 0.8, display: "block", marginBottom: 4 }}>Which loan?</label>
+                  <select value={calcLoanId ?? ""} onChange={e => setCalcLoanId(Number(e.target.value))} style={{ width: "100%" }}>
+                    <option value="" disabled>Select a loan</option>
+                    {loanData.filter((l: any) => l.is_active).map((l: any) => (
+                      <option key={l.id} value={l.id}>{l.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div style={{ marginBottom: 14 }}>
+                  <label style={{ color: C.sub, fontSize: 10, textTransform: "uppercase" as const, letterSpacing: 0.8, display: "block", marginBottom: 4 }}>Extra payment per month (€)</label>
+                  <input type="number" value={extraPayment} onChange={e => setExtraPayment(e.target.value)} placeholder="e.g. 100" />
+                </div>
+                {calcLoanId && extraPayment && Number(extraPayment) > 0 && (() => {
+                  const loan = loanData.find((l: any) => l.id === calcLoanId);
+                  if (!loan) return null;
+                  const base = simulateLoan(loan.current_capital, loan.interest_rate, loan.monthly_payment);
+                  const withExtra = simulateLoan(loan.current_capital, loan.interest_rate, loan.monthly_payment + Number(extraPayment));
+                  const monthsSaved = base.months - withExtra.months;
+                  const interestSaved = base.interestPaid - withExtra.interestPaid;
+                  return (
+                    <div style={{ background: C.panel2, borderRadius: 8, padding: 14 }}>
+                      <p style={{ color: C.text, fontSize: 13, margin: "0 0 8px" }}>
+                        Paying an extra <b style={{ color: C.green }}>{eur(Number(extraPayment))}</b>/month on <b>{loan.name}</b> would:
+                      </p>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                        <div style={{ background: C.panel, borderRadius: 8, padding: "10px 12px" }}>
+                          <p style={{ color: C.muted, fontSize: 9, textTransform: "uppercase" as const, margin: "0 0 3px" }}>Months saved</p>
+                          <p style={{ color: C.green, fontWeight: 900, fontSize: 16, margin: 0 }}>{isFinite(monthsSaved) ? monthsSaved : "—"}</p>
+                        </div>
+                        <div style={{ background: C.panel, borderRadius: 8, padding: "10px 12px" }}>
+                          <p style={{ color: C.muted, fontSize: 9, textTransform: "uppercase" as const, margin: "0 0 3px" }}>Interest saved</p>
+                          <p style={{ color: C.gold, fontWeight: 900, fontSize: 16, margin: 0 }}>{isFinite(interestSaved) ? eur(interestSaved) : "—"}</p>
+                        </div>
+                      </div>
+                      <p style={{ color: C.muted, fontSize: 10, marginTop: 8 }}>
+                        New payoff time: {isFinite(withExtra.months) ? `${Math.floor(withExtra.months/12)}y ${withExtra.months%12}mo` : "N/A"} (vs {isFinite(base.months) ? `${Math.floor(base.months/12)}y ${base.months%12}mo` : "N/A"} currently)
+                      </p>
+                    </div>
+                  );
+                })()}
+              </div>
+            )}
           </div>
         )}
 
