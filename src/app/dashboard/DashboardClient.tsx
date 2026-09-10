@@ -275,10 +275,10 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
     <div style={{ background: C.bg, minHeight: "100vh", fontFamily: "'IBM Plex Mono', monospace", color: C.text, paddingBottom: 60 }}>
 
       {/* HEADER */}
-      <div style={{ background: "linear-gradient(160deg,#050e1f,#06111e 60%,#04090f)", borderBottom: "1px solid #1e3a5f", padding: "18px 20px" }}>
+      <div style={{ background: "linear-gradient(160deg,#ffffff,#f0fdf4 60%,#ffffff)", borderBottom: `1px solid ${C.border}`, padding: "18px 20px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div>
-            <h1 style={{ fontSize: 16, fontWeight: 900, margin: "0 0 2px" }}>💰 Finance Tracker</h1>
+            <h1 style={{ fontSize: 16, fontWeight: 900, margin: "0 0 2px", color: C.green }}>💰 Finance Tracker</h1>
             <p style={{ color: C.sub, fontSize: 11, margin: 0 }}>Welcome, {user.name} · Sajeev & Shikha Plan</p>
           </div>
           <div style={{ display: "flex", gap: 8 }}>
@@ -396,7 +396,7 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
             </div>
 
             {/* DELIVERY COUNTDOWN */}
-            <div style={{ background: "linear-gradient(135deg,#060e1a,#06130e)", border: `1px solid ${C.green}33`, borderRadius: 12, padding: 18 }}>
+            <div style={{ background: "linear-gradient(135deg,#ffffff,#f0fdf4)", border: `1px solid ${C.green}33`, borderRadius: 12, padding: 18 }}>
               <h3 style={{ color: C.green, fontWeight: 800, fontSize: 13, marginBottom: 12 }}>🏠 Clamart Delivery Countdown</h3>
               {(() => {
                 const delivery = new Date("2028-06-01");
