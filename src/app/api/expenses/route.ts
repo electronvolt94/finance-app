@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
-  const fields = ["income","tgv","address_maintenance","loan_524","loan_93","loan_500","phone_loan","phone_connection","navigo","tcl","india_transfer","gym","amex","rent","electricity","water","wifi","groceries","youtube","personal","other","notes"];
+  const fields = ["income","tgv","mortgage_interest","address_maintenance","loan_524","loan_93","loan_500","phone_loan","phone_connection","navigo","tcl","india_transfer","gym","amex","rent","electricity","water","wifi","groceries","youtube","personal","other","notes"];
   await query(`
     INSERT INTO monthly_entries (user_id, year, month, ${fields.join(",")})
     VALUES ($1, $2, $3, ${fields.map((_,i) => `$${i+4}`).join(",")})
