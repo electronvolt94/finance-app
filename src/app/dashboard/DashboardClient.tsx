@@ -106,6 +106,10 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
 
   // loans local state
   const [loanData, setLoanData] = useState<any[]>(loans);
+  const [showAddLoan, setShowAddLoan] = useState(false);
+  const [newLoan, setNewLoan] = useState<Record<string, string>>({});
+  const [editingLoanId, setEditingLoanId] = useState<number | null>(null);
+  const [editLoanForm, setEditLoanForm] = useState<Record<string, string>>({});
   const [calcLoanId, setCalcLoanId] = useState<number | null>(null);
   const [extraPayment, setExtraPayment] = useState("");
 
@@ -555,6 +559,50 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
         {tab === "loans" && (
           <div>
             <p style={{ color: C.sub, fontSize: 12, marginBottom: 14 }}>Update loan capital remaining each month as you make extra payments.</p>
+            <button onClick={() => setShowAddLoan(v => !v)} style={{ background: C.green, color: "#fff", border: "none", borderRadius: 6, padding: "8px 14px", fontWeight: 700, fontSize: 12, marginBottom: 14 }}>
+              {showAddLoan ? "✕ Cancel" : "+ Add New Loan"}
+            </button>
+
+            {showAddLoan && (
+              <div style={{ background: C.panel, border: `1px solid ${C.green}33`, borderRadius: 12, padding: 18, marginBottom: 14 }}>
+                <h3 style={{ color: C.green, fontWeight: 800, fontSize: 13, marginBottom: 14 }}>New Loan</h3>
+                <div style={{ marginBottom: 10 }}>
+                  <label style={{ color: C.sub, fontSize: 10, textTransform: "uppercase" as const, display: "block", marginBottom: 4 }}>Name</label>
+                  <input value={newLoan.name || ""} onChange={e => setNewLoan(p => ({ ...p, name: e.target.value }))} placeholder="e.g. Car Loan" />
+                </div>
+                <div style={{ marginBottom: 10 }}>
+                  <label style={{ color: C.sub, fontSize: 10, textTransform: "uppercase" as const, display: "block", marginBottom: 4 }}>Owner</label>
+                  <input value={newLoan.owner || ""} onChange={e => setNewLoan(p => ({ ...p, owner: e.target.value }))} placeholder="Sajeev / Shikha / Joint" />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+                  <div>
+                    <label style={{ color: C.sub, fontSize: 10, textTransform: "uppercase" as const, display: "block", marginBottom: 4 }}>Original Capital (€)</label>
+                    <input type="number" value={newLoan.original_capital || ""} onChange={e => setNewLoan(p => ({ ...p, original_capital: e.target.value }))} placeholder="0" />
+                  </div>
+                  <div>
+                    <label style={{ color: C.sub, fontSize: 10, textTransform: "uppercase" as const, display: "block", marginBottom: 4 }}>Monthly Payment (€)</label>
+                    <input type="number" value={newLoan.monthly_payment || ""} onChange={e => setNewLoan(p => ({ ...p, monthly_payment: e.target.value }))} placeholder="0" />
+                  </div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 10 }}>
+                  <div>
+                    <label style={{ color: C.sub, fontSize: 10, textTransform: "uppercase" as const, display: "block", marginBottom: 4 }}>Interest Rate (% annual)</label>
+                    <input type="number" value={newLoan.interest_rate || ""} onChange={e => setNewLoan(p => ({ ...p, interest_rate: e.target.value }))} placeholder="0" />
+                  </div>
+                  <div>
+                    <label style={{ color: C.sub, fontSize: 10, textTransform: "uppercase" as const, display: "block", marginBottom: 4 }}>Start Date</label>
+                    <input type="date" value={newLoan.start_date || ""} onChange={e => setNewLoan(p => ({ ...p, start_date: e.target.value }))} />
+                  </div>
+                </div>
+                <div style={{ marginBottom: 14 }}>
+                  <label style={{ color: C.sub, fontSize: 10, textTransform: "uppercase" as const, display: "block", marginBottom: 4 }}>Expected End Date (optional)</label>
+                  <input type="date" value={newLoan.expected_end || ""} onChange={e => setNewLoan(p => ({ ...p, expected_end: e.target.value }))} />
+                </div>
+                <button onClick={addLoan} style={{ background: C.green, color: "#fff", border: "none", borderRadius: 6, padding: "10px 16px", fontWeight: 700, fontSize: 13 }}>
+                  Save Loan
+                </button>
+              </div>
+            )}
             {loanData.map((loan: any) => (
               <div key={loan.id} style={{ background: C.panel, border: `1px solid ${loan.is_active ? C.orange : C.green}33`, borderRadius: 12, padding: 18, marginBottom: 12 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
@@ -601,6 +649,32 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
                       💀 Cleared
                     </button>
                   </div>
+                )}
+                {editingLoanId === loan.id ? (
+                  <div style={{ marginTop: 10, paddingTop: 10, borderTop: `1px solid ${C.border}` }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 8 }}>
+                      <div>
+                        <label style={{ color: C.sub, fontSize: 9, textTransform: "uppercase" as const, display: "block", marginBottom: 3 }}>Original (€)</label>
+                        <input type="number" value={editLoanForm.original_capital} onChange={e => setEditLoanForm(p => ({ ...p, original_capital: e.target.value }))} />
+                      </div>
+                      <div>
+                        <label style={{ color: C.sub, fontSize: 9, textTransform: "uppercase" as const, display: "block", marginBottom: 3 }}>Monthly (€)</label>
+                        <input type="number" value={editLoanForm.monthly_payment} onChange={e => setEditLoanForm(p => ({ ...p, monthly_payment: e.target.value }))} />
+                      </div>
+                      <div>
+                        <label style={{ color: C.sub, fontSize: 9, textTransform: "uppercase" as const, display: "block", marginBottom: 3 }}>Rate (%)</label>
+                        <input type="number" value={editLoanForm.interest_rate} onChange={e => setEditLoanForm(p => ({ ...p, interest_rate: e.target.value }))} />
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button onClick={() => saveEditLoan(loan.id)} style={{ background: C.green, color: "#fff", border: "none", borderRadius: 6, padding: "6px 12px", fontSize: 11, fontWeight: 700 }}>Save</button>
+                      <button onClick={() => setEditingLoanId(null)} style={{ background: C.muted, color: C.text, border: "none", borderRadius: 6, padding: "6px 12px", fontSize: 11, fontWeight: 700 }}>Cancel</button>
+                    </div>
+                  </div>
+                ) : (
+                  <button onClick={() => startEditLoan(loan)} style={{ marginTop: 10, background: "none", border: `1px solid ${C.border}`, color: C.sub, borderRadius: 6, padding: "5px 10px", fontSize: 11 }}>
+                    ✎ Edit loan details
+                  </button>
                 )}
               </div>
             ))}
