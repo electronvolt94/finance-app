@@ -122,7 +122,7 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
             phone_loan: d.phone_loan, phone_connection: d.phone_connection,
             navigo: d.navigo, tcl: d.tcl, india_transfer: d.india_transfer,
             gym: d.gym, amex: d.amex, rent: d.rent, electricity: d.electricity,
-            water: d.water, wifi: d.wifi, groceries: d.groceries,
+            water: d.water, wifi: d.wifi, groceries: d.groceries,mortgage_interest: d.mortgage_interest
             youtube: d.youtube, personal: d.personal, other: d.other, notes: d.notes || "",
           });
         } else {
