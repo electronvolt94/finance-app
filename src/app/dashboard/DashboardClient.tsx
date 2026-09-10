@@ -443,6 +443,7 @@ export default function DashboardClient({ user, loans, goals, recentExpenses, la
               {/* Other */}
               <div style={{ marginBottom: 16 }}>
                 {EF("other","Other / One-off","0")}
+                {EF("mortgage_interest", "Mortgage Interest (Intercalary)")}
                 {EF("notes","Notes","")}
               </div>
 
